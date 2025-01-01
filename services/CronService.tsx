@@ -41,9 +41,9 @@ export default class CronService {
                 console.log(`${url}`);
 
                 // get the last snapshots
-                const isNew = await SnapshotService.fetchThenCompareIfChangedThenSave(url);
+                const { isChanged, lastSnapshot, newSnapshot } = await SnapshotService.fetchThenCompareIfChangedThenSave(url);
 
-                if (isNew) {
+                if (isChanged) {
                     MailService.sendMail(this.ADMIN_EMAIL, `New snapshot for ${url.link}`, `Hello, a new snapshot has been created for ${url.link}`);
                     console.log(`New snapshot for ${url.link}`);
                 }

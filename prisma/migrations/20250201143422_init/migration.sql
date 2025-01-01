@@ -22,13 +22,17 @@ CREATE TABLE "Session" (
 );
 
 -- CreateTable
-CREATE TABLE "URL" (
+CREATE TABLE "Url" (
     "urlId" TEXT NOT NULL,
-    "url" TEXT NOT NULL,
+    "title" TEXT,
+    "link" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "xpath" TEXT NOT NULL DEFAULT '//html',
+    "authHeader" TEXT,
+    "invertal" INTEGER NOT NULL DEFAULT 15,
 
-    CONSTRAINT "URL_pkey" PRIMARY KEY ("urlId")
+    CONSTRAINT "Url_pkey" PRIMARY KEY ("urlId")
 );
 
 -- CreateTable
@@ -55,4 +59,4 @@ CREATE UNIQUE INDEX "Snapshot_hash_key" ON "Snapshot"("hash");
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("userId") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Snapshot" ADD CONSTRAINT "Snapshot_urlId_fkey" FOREIGN KEY ("urlId") REFERENCES "URL"("urlId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Snapshot" ADD CONSTRAINT "Snapshot_urlId_fkey" FOREIGN KEY ("urlId") REFERENCES "Url"("urlId") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Url" ADD COLUMN     "invertal" INTEGER NOT NULL DEFAULT 15;

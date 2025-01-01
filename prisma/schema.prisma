@@ -50,6 +50,9 @@ model Url {
   xpath       String @default("//html")
   authHeader  String? // for auth
 
+  aiEnabled   Boolean @default(false)
+  notifyIf      String? // for prompt
+
   invertal    Int    @default(15) // 5's multiple
 }
 
@@ -60,6 +63,9 @@ model Snapshot {
 
   urlId      String
   url        Url      @relation(fields: [urlId], references: [urlId])
+
+  content    String @default("")
+  changelog  String @default("")
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
