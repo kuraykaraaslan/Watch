@@ -3,10 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axiosInstance from '@/libs/axios';
-import { Editor } from '@tinymce/tinymce-react';
-import { User } from '@prisma/client';
 import { toast } from 'react-toastify';
-import Image from 'next/image';
 
 
 const UpdateUser =({ params }: { params: { userId: string } }) => {
@@ -15,36 +12,8 @@ const UpdateUser =({ params }: { params: { userId: string } }) => {
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('USER');
 
-    const [imageUrl, setImageUrl] = useState<String | null>(null);
-
     const router = useRouter();
 
-    const uploadImage = async () => {
-        const input = document.getElementById('file') as HTMLInputElement;
-        const files = input.files;
-
-        if (!files) {
-            return;
-        }
-
-        const imageFile = files[0];
-
-        const formData = new FormData();
-        formData.append('file', imageFile);
-        formData.append('folder', 'users');
-
-        await axiosInstance.post('/api/aws', formData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }
-        ).then((res) => {
-            setImageUrl(res.data.url);
-        }).catch((error) => {
-            console.error(error);
-        });
-    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,7 +38,6 @@ const UpdateUser =({ params }: { params: { userId: string } }) => {
             name,
             email,
             role,
-            image: imageUrl,
         }).then(() => {
             toast.success('User updated successfully');
             router.push('/backend/users');
@@ -78,20 +46,6 @@ const UpdateUser =({ params }: { params: { userId: string } }) => {
         });
 
     };
-
-    const showModal = () => {
-        if (!document) {
-            return;
-        }
-
-        const modal = document.getElementById('my_modal_4');
-
-        if (modal) {
-            //@ts-ignore
-            modal?.showModal();
-        }
-
-    }
 
 
     useEffect(() => {
@@ -102,7 +56,6 @@ const UpdateUser =({ params }: { params: { userId: string } }) => {
                 setName(user.name);
                 setEmail(user.email);
                 setRole(user.role);
-                setImageUrl(user.image);
             }).catch((error) => {
                 console.error(error);
             });
@@ -160,31 +113,6 @@ const UpdateUser =({ params }: { params: { userId: string } }) => {
                             <option value="USER">User</option>
                             <option value="ADMIN">Admin</option>
                         </select>
-                    </div>
-
-                    <div className="form-control mb-4 mt-4">
-                        <label className="label">
-                            <span className="label-text">Image</span>
-                        </label>
-                        <img src={imageUrl ? imageUrl as string : '/assets/img/og.png'}
-                        
-                        width={400} height={400}
-                            alt="Image" className="h-96 w-96 object-cover rounded-lg" />
-                        <div className="relative flex justify-between items-center">
-                            <input
-                                type="file"
-                                id="file"
-                                placeholder="Image URL"
-                                className="input input-bordered mt-2 p-4 flex-1 h-16"
-                                //only images
-                                accept="image/*"
-                            />
-                            <div className="absolute right-2 top-2 text-black p-2 rounded-lg">
-                                <button type="button" className="h-12 text-black p-2 rounded-lg bg-primary mr-2" onClick={uploadImage}>
-                                    Upload Image
-                                </button>
-                            </div>
-                        </div>
                     </div>
 
                     <button type="submit" className="btn btn-primary block w-full mt-4">Update User</button>

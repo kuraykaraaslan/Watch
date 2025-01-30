@@ -1,0 +1,62 @@
+generator client {
+  provider   = "prisma-client-js"
+  accelerate = "true"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId                 String    @id @default(cuid())
+
+  name                   String?
+
+  email                  String    @unique
+  emailVerified          DateTime?
+
+  password               String?
+  role                   String    @default("USER")
+
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  sessions               Session[]
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+
+model Url {
+  urlId      String   @id @default(cuid())
+
+  title     String?
+  link        String
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  snapshots   Snapshot[]
+
+  invertal    Int    @default(15) // 5's multiple
+}
+
+model Snapshot {
+  snapshotId String   @id @default(cuid())
+
+  hash       String  @unique
+
+  urlId      String
+  url        Url      @relation(fields: [urlId], references: [urlId])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

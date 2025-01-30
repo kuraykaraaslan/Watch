@@ -3,7 +3,6 @@ import React, { useState} from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axiosInstance from '@/libs/axios';
-import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
 
@@ -13,32 +12,19 @@ const CreateUser = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [phone, setPhone] = useState('');
     const [role, setRole] = useState('USER');
-    const [slug, setSlug] = useState('');
-    const [image, setImage] = useState('');
-    const [bio, setBio] = useState('');
-
-    const [imageUrl, setImageUrl] = useState<String | null>(null);
-    //image upLoad
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const router = useRouter();
 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const neededFields = [name, email, password, phone, role, slug, image, bio];
+        const neededFields = [name, email, password, role];
 
         const user = {
             name,
             email,
             password,
-            phone,
             role,
-            slug,
-            image,
-            bio, 
         };
 
         if (name === '') {
@@ -57,19 +43,8 @@ const CreateUser = () => {
             return;
         }
 
-        if (phone === '') {
-            toast.error('Phone is required');
-            return;
-        }
-
-
         if (role === '') {
             toast.error('Role is required');
-            return;
-        }
-
-        if (slug === '') {
-            toast.error('Slug is required');
             return;
         }
 
@@ -81,11 +56,7 @@ const CreateUser = () => {
                 name,
                 email,
                 password,
-                phone,
                 role,
-                slug,
-                image,
-                bio,
             },
 
         }).then(() => {
@@ -97,22 +68,6 @@ const CreateUser = () => {
 
     };
 
-
-    const uploadImage = async () => {
-        if (!imageFile) {
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', imageFile);
-        formData.append('folder', 'categories');
-
-        await axiosInstance.post('/api/aws', formData).then((res) => {
-            setImageUrl(res.data.url);
-        }).catch((error) => {
-            console.error(error);
-        });
-    }
 
     return (
         <>
@@ -170,19 +125,6 @@ const CreateUser = () => {
 
                     <div className="form-control">
                         <label className="label">
-                            <span className="label-text">Phone</span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Phone"
-                            className="input input-bordered"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="form-control">
-                        <label className="label">
                             <span className="label-text">Role</span>
                         </label>
                         <select
@@ -195,88 +137,6 @@ const CreateUser = () => {
                         </select>
                     </div>
 
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Slug</span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Slug"
-                            className="input input-bordered"
-                            value={slug}
-                            onChange={(e) => setSlug(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Bio</span>
-                        </label>
-                        <Editor
-                            init={{
-                                height: 500,
-                                menubar: false,
-                                plugins: [
-                                    'advlist autolink lists link image charmap print preview anchor image',
-                                    'searchreplace visualblocks code fullscreen',
-                                    'insertdatetime media table paste code help wordcount'
-                                ],
-                                toolbar:
-                                    'undo redo | image | formatselect | bold italic backcolor | \
-                                alignleft aligncenter alignright alignjustify | \
-                                bullist numlist outdent indent | removeformat | help',
-                            }}
-                            apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-                            value={bio}
-                            onEditorChange={(content) => setBio(content)}
-                        />
-
-                    </div>
-
-                    <div className="form-control">
-                        <label className="label">
-                            <span className="label-text">Slug</span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Slug"
-                            className="input input-bordered"
-                            value={slug}
-                            onChange={(e) => setSlug(e.target.value)}
-                        />
-                    </div>
-                
-                    <div className="form-control mb-4 mt-4">
-                        <label className="label">
-                            <span className="label-text">Image</span>
-                        </label>
-                        <Image src={imageUrl ? imageUrl as string : '/assets/img/og.png'}
-                        
-                        width={384} height={256}
-                            alt="Image" className="h-64 w-96 object-cover rounded-lg" />
-                        <div className="relative flex justify-between items-center">
-                            <input
-                                type="file"
-                                placeholder="Image URL"
-                                className="input input-bordered mt-2 p-4 flex-1 h-16"
-                                //only images
-                                accept="image/*"
-
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                        setImageFile(file);
-                                        //setImageUrl(URL.createObjectURL(file));
-                                    }
-                                }}
-                            />
-                            <div className="absolute right-2 top-2 text-black p-2 rounded-lg">
-                                <button type="button" className="h-12 text-black p-2 rounded-lg bg-primary mr-2" onClick={uploadImage}>
-                                    Upload Image
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                     <button type="submit" className="btn btn-primary block w-full mt-4">Create Post</button>
                 </form>
             </div>
