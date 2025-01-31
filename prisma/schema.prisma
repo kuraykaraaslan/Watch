@@ -46,6 +46,10 @@ model Url {
 
   snapshots   Snapshot[]
 
+  //snapshot config
+  xpath       String @default("//html")
+  authHeader  String? // for auth
+
   invertal    Int    @default(15) // 5's multiple
 }
 
